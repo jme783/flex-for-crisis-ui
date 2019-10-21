@@ -17,6 +17,8 @@ const infoPanelContent = `
   <p>{{task.status}}</p>
 `;
 
+const anonymousText = "Anonymous";
+
 export default class FfcDemoUiPlugin extends FlexPlugin {
   constructor() {
     super(PLUGIN_NAME);
@@ -38,9 +40,12 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
     flex.MainHeader.defaultProps.logoUrl = "https://sinopia-penguin-7201.twil.io/assets/hope-for-tomorrow-logo.svg"; 
 
     // Templated UI
-    flex.Manager.getInstance().strings.TaskHeaderLine = "Anonymous";
-    flex.Manager.getInstance().strings.SupervisorTaskHeaderLine = "Anonymous";
-    flex.Manager.getInstance().strings.SupervisorTaskCardHeader = "Anonymous";
+    flex.Manager.getInstance().strings.TaskHeaderLine = anonymousText;
+    flex.Manager.getInstance().strings.SupervisorTaskHeaderLine = anonymousText;
+    flex.Manager.getInstance().strings.SupervisorTaskCardHeader = anonymousText;
+    flex.Manager.getInstance().strings.CallParticipantCustomerName = anonymousText;
+    flex.Manager.getInstance().strings.LiveCommsOngoingCallMessage = anonymousText;
+    flex.Manager.getInstance().strings.SupervisorTaskViewContentHeader = `{{worker.fullName}}, ${anonymousText}`;
 
     flex.Manager.getInstance().strings.PredefinedChatMessageAuthorName = "Hope For Tomorrow Chatbot";
     flex.Manager.getInstance().strings.PredefinedChatMessageBody = "Thank you for contacting Hope For Tomorrow's crisis hotline. We want you to know that you are not alone, and we are here to listen.";
