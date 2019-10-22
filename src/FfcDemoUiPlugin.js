@@ -34,6 +34,12 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
   init(flex, manager) {
     this.registerReducers(manager);
 
+    flex.Actions.replaceAction("AcceptTask", (payload, original) => {
+      original(payload).then(() => {
+        this.anonymizeFriendlyName(manager);
+      })
+    });
+
     // Update the styling of the page to use the right colors
     manager.updateConfig(CustomThemeOverrides);
     // Change the Logo
@@ -46,7 +52,7 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
     flex.Manager.getInstance().strings.CallParticipantCustomerName = anonymousText;
     flex.Manager.getInstance().strings.LiveCommsOngoingCallMessage = anonymousText;
     flex.Manager.getInstance().strings.SupervisorTaskViewContentHeader = `{{worker.fullName}}, ${anonymousText}`;
-    
+
     flex.Manager.getInstance().strings.NoTasks = "Nothing in your queue";
     flex.Manager.getInstance().strings.NoTasksHintAvailable = "Awaiting an incoming conversation"
 
@@ -65,9 +71,7 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
 
     flex.MessagingCanvas.defaultProps.memberDisplayOptions = {
       yourDefaultName: 'You',
-      theirDefaultName: '—',
-      yourFriendlyNameOverride: false,
-      theirFriendlyNameOverride: false
+      yourFriendlyNameOverride: false
     };
 
     flex.MessageListItem.defaultProps.useFriendlyName = true;
@@ -96,6 +100,27 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
     }
 
     manager.store.addReducer(namespace, reducers);
+  }
+/**
+ * Anonymizes the phone number of the person contacting the hotline
+ * by changing the Friendly Name used by the Webchat Chat Client
+ * NOTE: This is a shabby way of doing this using setTimeout(). There
+ * must be a better way, but I can't figure it out right now due to the limited
+ * events that I can tap into. 
+ * @param manager { Flex.Manager }
+ */
+  anonymizeFriendlyName(manager) {
+    setTimeout(() => {
+      manager.chatClient.getSubscribedUsers().then((users) => {
+        users.forEach((user) => {
+          console.log(user);
+          if (user.identity.startsWith('sms_')) {
+            user.updateFriendlyName(anonymousText);
+            window.clearInterval();
+          }
+        });
+      });
+    }, 1500);
   }
 }
 
