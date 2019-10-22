@@ -5,6 +5,7 @@ import reducers, { namespace } from './states';
 import CustomThemeOverrides from './CustomThemeOverrides.js';
 
 const PLUGIN_NAME = 'FfcDemoUiPlugin';
+const axios = require('axios');
 
 const infoPanelContent = `
   <h1>Conversation Info</h1>
@@ -38,6 +39,11 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
       original(payload).then(() => {
         this.anonymizeFriendlyName(manager);
       })
+    });
+
+    // Send a follow-up survey
+    flex.Actions.addListener("afterWrapupTask", (payload) => {
+      this.sendPostConversationSurvey(payload, manager);
     });
 
     // Update the styling of the page to use the right colors
@@ -113,14 +119,48 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
     setTimeout(() => {
       manager.chatClient.getSubscribedUsers().then((users) => {
         users.forEach((user) => {
-          console.log(user);
-          if (user.identity.startsWith('sms_')) {
+          if (user && user.identity.startsWith('sms_')) {
             user.updateFriendlyName(anonymousText);
             window.clearInterval();
           }
         });
       });
     }, 1500);
+  }
+  /**
+   * Triggers a call to the Studio Flow to send a post conversation survey
+   * Note! this currently is just set up to work with SMS. Should be configured to not blow up for use with Voice and Webchat
+   * @param payload { Payload of the action }
+   * @param manager { Flex.Manager }
+   */
+  sendPostConversationSurvey(payload, manager) {
+    // Figure out what channel was just impacted
+    manager.chatClient.getChannelBySid(payload.task.attributes.channelSid).then((channel) => {
+
+      // This is no bueno — these should be moved into an environment variable if possible
+      const FromPhoneNumber = "+12055909660";
+      const TwilioAccountSid = "AC338a0043a65a2b237b282106bd95f0f5";
+      const TwilioAuthToken = "756312e198faa001007973e003451695";
+      const studioFlowId = "FWce8f29cac98eca262d75285eeac6e4af"
+
+      // The To Phone Number is set as the channel's friendly name
+      const ToPhoneNumber = channel.friendlyName;
+
+      axios({
+        method: "post",
+        url: `https://studio.twilio.com/v1/Flows/${studioFlowId}/Executions`,
+        auth: {
+          username: TwilioAccountSid,
+          password: TwilioAuthToken
+        },
+        data: `To=${ToPhoneNumber}&From=+${FromPhoneNumber}`
+      }).then(() => {
+        console.log("successfully sent post-conversation survey");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    });
   }
 }
 
