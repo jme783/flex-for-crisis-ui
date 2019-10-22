@@ -46,6 +46,9 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
     flex.Manager.getInstance().strings.CallParticipantCustomerName = anonymousText;
     flex.Manager.getInstance().strings.LiveCommsOngoingCallMessage = anonymousText;
     flex.Manager.getInstance().strings.SupervisorTaskViewContentHeader = `{{worker.fullName}}, ${anonymousText}`;
+    
+    flex.Manager.getInstance().strings.NoTasks = "Nothing in your queue";
+    flex.Manager.getInstance().strings.NoTasksHintAvailable = "Awaiting an incoming conversation"
 
     flex.Manager.getInstance().strings.PredefinedChatMessageAuthorName = "Hope For Tomorrow Chatbot";
     flex.Manager.getInstance().strings.PredefinedChatMessageBody = "Thank you for contacting Hope For Tomorrow's crisis hotline. We want you to know that you are not alone, and we are here to listen.";
@@ -62,17 +65,19 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
 
     flex.MessagingCanvas.defaultProps.memberDisplayOptions = {
       yourDefaultName: 'You',
-      theirDefaultName: 'Anonymous Person',
+      theirDefaultName: '—',
       yourFriendlyNameOverride: false,
       theirFriendlyNameOverride: false
     };
 
-    flex.MessageListItem.defaultProps.authorName = "Foo";
     flex.MessageListItem.defaultProps.useFriendlyName = true;
+
+    flex.MessagingCanvas.defaultProps.messageStyle = "Squared";
+
 
     flex.MessagingCanvas.defaultProps.avatarCallback = (identity) => {
       // This is the identity if the message comes from Studio. Change the icon to be a robot
-      if(identity.startsWith('CH')) {
+      if(identity.startsWith('Hope for Tomorrow')) {
         return "https://brand.twilio.com/assets/icons/product/product-icon-autopilot.svg"
       }
     }
