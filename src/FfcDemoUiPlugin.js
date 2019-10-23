@@ -138,7 +138,7 @@ export default class FfcDemoUiPlugin extends FlexPlugin {
     manager.chatClient.getChannelBySid(payload.task.attributes.channelSid).then((channel) => {
 
       // This is no bueno — these should be moved into an environment variable if possible
-      const FromPhoneNumber = "+12055909660";
+      const FromPhoneNumber = "+12054311364";
       const TwilioAccountSid = "AC338a0043a65a2b237b282106bd95f0f5";
       const TwilioAuthToken = "756312e198faa001007973e003451695";
       const studioFlowId = "FWce8f29cac98eca262d75285eeac6e4af"
